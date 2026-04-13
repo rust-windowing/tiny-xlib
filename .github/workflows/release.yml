@@ -10,7 +10,7 @@ on:
 
 jobs:
   create-release:
-    if: github.repository_owner == 'notgull'
+    if: github.repository_owner == 'rust-windowing'
     runs-on: ubuntu-latest
     steps:
       - uses: taiki-e/checkout-action@v1
