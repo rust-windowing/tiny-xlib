@@ -144,8 +144,9 @@ macro_rules! lock {
     }};
 }
 
-ctor_lite::ctor! {
-    unsafe static XLIB: io::Result<ffi::Xlib> = {
+ctor::declarative::ctor! {
+    #[ctor(unsafe)]
+    static XLIB: io::Result<ffi::Xlib> = {
         #[cfg_attr(coverage, no_coverage)]
         unsafe fn load_xlib_with_error_hook() -> io::Result<ffi::Xlib> {
             // Here's a puzzle: how do you *safely* add an error hook to Xlib? Like signal handling, there
