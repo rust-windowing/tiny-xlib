@@ -23,26 +23,26 @@
 //! primary issues.
 //!
 //! 1. **You should not be using Xlib in 2023.** [Xlib] is legacy code, and even that doesn't get across
-//!     how poor the API decisions that it's locked itself into are. It has a global error hook for
-//!     some reason, thread-safety is a mess, and it has so many soundness holes it might as well be made
-//!     out of swiss cheese. You should not be using [Xlib]. If you *have* to use [Xlib], you should just
-//!     run all of your logic using the much more sound [XCB] library, or, even more ideally, something
-//!     like [`x11rb`]. Then, you take the `Display` pointer and use it for whatever legacy API you've
-//!     locked yourself into, and use [XCB] or [`x11rb`] for everything else. Yes, I just called [GLX]
-//!     a legacy API. It's the 2020's now. [Vulkan] and [`wgpu`] run everywhere aside from legacy machines.
-//!     Not to mention, they support [XCB].
+//!    how poor the API decisions that it's locked itself into are. It has a global error hook for
+//!    some reason, thread-safety is a mess, and it has so many soundness holes it might as well be made
+//!    out of swiss cheese. You should not be using [Xlib]. If you *have* to use [Xlib], you should just
+//!    run all of your logic using the much more sound [XCB] library, or, even more ideally, something
+//!    like [`x11rb`]. Then, you take the `Display` pointer and use it for whatever legacy API you've
+//!    locked yourself into, and use [XCB] or [`x11rb`] for everything else. Yes, I just called [GLX]
+//!    a legacy API. It's the 2020's now. [Vulkan] and [`wgpu`] run everywhere aside from legacy machines.
+//!    Not to mention, they support [XCB].
 //!
 //! 2. Even if you manage to use [`x11-dl`] without tripping over the legacy API, it is a massive crate.
-//!     [Xlib] comes with quite a few functions, most of which are unnecessary in the 21st century.
-//!     Even if you don't use any of these and just stick to [XCB], you still pay the price for it.
-//!     Binaries that use [`x11-dl`] need to dedicate a significant amount of their binary and memory
-//!     space to the library. Even on Release builds, I have recorded [`x11-dl`] taking up to seven
-//!     percent of the binary.
+//!    [Xlib] comes with quite a few functions, most of which are unnecessary in the 21st century.
+//!    Even if you don't use any of these and just stick to [XCB], you still pay the price for it.
+//!    Binaries that use [`x11-dl`] need to dedicate a significant amount of their binary and memory
+//!    space to the library. Even on Release builds, I have recorded [`x11-dl`] taking up to seven
+//!    percent of the binary.
 //!
 //! 3. Global error handling. [Xlib] has a single global error hook. This is reminiscent of the Unix
-//!     signal handling API, in that it makes it difficult to create well-modularized programs
-//!     since they will fight with each-other over the error handlers. However, unlike the signal
-//!     handling API, there is no way to tell if you're replacing an existing error hook.
+//!    signal handling API, in that it makes it difficult to create well-modularized programs
+//!    since they will fight with each-other over the error handlers. However, unlike the signal
+//!    handling API, there is no way to tell if you're replacing an existing error hook.
 //!
 //! `tiny-xlib` aims to solve all of these problems. It provides a safe API around [Xlib] that is
 //! conducive to being handed off to both [XCB] APIs and legacy [Xlib] APIs. The library only
@@ -305,6 +305,8 @@ fn setup_error_handler(xlib: &ffi::Xlib) {
         // If it isn't the default error handler, then we need to store it.
         // SAFETY: DEFAULT_ERROR_HOOK is not set after the program starts, so this is safe.
         let default_hook = unsafe { DEFAULT_ERROR_HOOK.get() };
+        // TODO(MSRV 1.85): Use core::ptr::fn_addr_eq
+        #[allow(unpredictable_function_pointer_comparisons)]
         if prev != default_hook.flatten() && prev != Some(error_handler) {
             lock!(ERROR_HANDLERS).prev = prev;
         }
