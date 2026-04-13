@@ -13,7 +13,7 @@ We welcome contributions to this project. Please feel free to open GitHub issues
 
 All changes submitted to this repository are run through GitHub Actions and the workflow defined into the [`ci.yml`] file. If your change does not pass the tests described, it is unlikely to be merged.
 
-[`ci.yml`]: https://github.com/notgull/tiny-xlib/blob/main/.github/workflows/ci.yml
+[`ci.yml`]: https://github.com/rust-windowing/tiny-xlib/blob/main/.github/workflows/ci.yml
 
 ## DCO
 

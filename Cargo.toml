@@ -6,9 +6,9 @@ rust-version = "1.63"
 authors = ["John Nunley <dev@notgull.net>"]
 license = "MIT OR Apache-2.0 OR Zlib"
 description = "A tiny Xlib wrapper for Rust"
-repository = "https://github.com/notgull/tiny-xlib"
+repository = "https://github.com/rust-windowing/tiny-xlib"
 documentation = "https://docs.rs/tiny-xlib"
-homepage = "https://github.com/notgull/tiny-xlib"
+homepage = "https://github.com/rust-windowing/tiny-xlib"
 
 [features]
 default = ["tracing"]
