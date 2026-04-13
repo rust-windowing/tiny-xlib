@@ -8,8 +8,6 @@ on:
   push:
     branches:
       - main
-  schedule:
-    - cron: '0 2 * * 0'
 
 env:
   CARGO_INCREMENTAL: 0
