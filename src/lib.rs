@@ -118,7 +118,7 @@
 //! [`libloading`]: https://crates.io/crates/libloading
 
 #![allow(unused_unsafe)]
-#![cfg_attr(coverage, feature(no_coverage))]
+#![cfg_attr(coverage, feature(coverage_attribute))]
 
 mod ffi;
 
@@ -135,7 +135,7 @@ use std::sync::{Mutex, MutexGuard, Once, PoisonError};
 macro_rules! lock {
     ($e:expr) => {{
         // Make sure this isn't flagged with coverage.
-        #[cfg_attr(coverage, no_coverage)]
+        #[cfg_attr(coverage, coverage(off))]
         fn unwrapper<T>(guard: PoisonError<MutexGuard<'_, T>>) -> MutexGuard<'_, T> {
             guard.into_inner()
         }
@@ -147,7 +147,7 @@ macro_rules! lock {
 ctor::declarative::ctor! {
     #[ctor(unsafe)]
     static XLIB: io::Result<ffi::Xlib> = {
-        #[cfg_attr(coverage, no_coverage)]
+        #[cfg_attr(coverage, coverage(off))]
         unsafe fn load_xlib_with_error_hook() -> io::Result<ffi::Xlib> {
             // Here's a puzzle: how do you *safely* add an error hook to Xlib? Like signal handling, there
             // is a single global error hook. Therefore, we need to make sure that we economize on the
@@ -164,14 +164,14 @@ ctor::declarative::ctor! {
             // sets the error hook to a dummy function, reads the resulting error hook into a static
             // variable, and then resets the error hook to the default function. This allows us to read
             // the default error hook and compare it to the one that we're setting.
-            #[cfg_attr(coverage, no_coverage)]
+            #[cfg_attr(coverage, coverage(off))]
             fn error(e: impl std::error::Error) -> io::Error {
                 io::Error::new(io::ErrorKind::Other, format!("failed to load Xlib: {}", e))
             }
             let xlib = ffi::Xlib::load().map_err(error)?;
 
             // Dummy function we use to set the error hook.
-            #[cfg_attr(coverage, no_coverage)]
+            #[cfg_attr(coverage, coverage(off))]
             unsafe extern "C" fn dummy(
                 _display: *mut ffi::Display,
                 _error: *mut ffi::XErrorEvent,
@@ -200,7 +200,7 @@ ctor::declarative::ctor! {
 #[inline]
 fn get_xlib(sym: &io::Result<ffi::Xlib>) -> io::Result<&ffi::Xlib> {
     // Eat coverage on the error branch.
-    #[cfg_attr(coverage, no_coverage)]
+    #[cfg_attr(coverage, coverage(off))]
     fn error(e: &io::Error) -> io::Error {
         io::Error::new(e.kind(), e.to_string())
     }
@@ -225,7 +225,7 @@ unsafe extern "C" fn error_handler(
     // Abort the program if the error hook panics.
     struct AbortOnPanic;
     impl Drop for AbortOnPanic {
-        #[cfg_attr(coverage, no_coverage)]
+        #[cfg_attr(coverage, coverage(off))]
         #[cold]
         #[inline(never)]
         fn drop(&mut self) {
@@ -502,7 +502,7 @@ enum Slot {
 
 impl HandlerList {
     /// Create a new handler list.
-    #[cfg_attr(coverage, no_coverage)]
+    #[cfg_attr(coverage, coverage(off))]
     const fn new() -> Self {
         Self {
             slots: vec![],
@@ -517,7 +517,7 @@ impl HandlerList {
     /// Returns the index of the handler.
     fn insert(&mut self, handler: ErrorHook) -> usize {
         // Eat the coverage for the unreachable branch.
-        #[cfg_attr(coverage, no_coverage)]
+        #[cfg_attr(coverage, coverage(off))]
         #[inline(always)]
         fn unwrapper(slot: &Slot) -> usize {
             match slot {
@@ -571,7 +571,7 @@ struct ErrorHookSlot(Cell<Option<ffi::XErrorHook>>);
 unsafe impl Sync for ErrorHookSlot {}
 
 impl ErrorHookSlot {
-    #[cfg_attr(coverage, no_coverage)]
+    #[cfg_attr(coverage, coverage(off))]
     const fn new() -> Self {
         Self(Cell::new(None))
     }
@@ -580,7 +580,7 @@ impl ErrorHookSlot {
         self.0.get()
     }
 
-    #[cfg_attr(coverage, no_coverage)]
+    #[cfg_attr(coverage, coverage(off))]
     unsafe fn set(&self, hook: ffi::XErrorHook) {
         self.0.set(Some(hook));
     }
