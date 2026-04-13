@@ -2,7 +2,7 @@
 name = "tiny-xlib"
 version = "0.2.4"
 edition = "2021"
-rust-version = "1.63"
+rust-version = "1.70"
 authors = ["John Nunley <dev@notgull.net>"]
 license = "MIT OR Apache-2.0 OR Zlib"
 description = "A tiny Xlib wrapper for Rust"
