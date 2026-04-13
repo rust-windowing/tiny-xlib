@@ -115,7 +115,7 @@ impl Xlib {
     }
 
     /// Load the Xlib library at runtime.
-    #[cfg_attr(coverage, no_coverage)]
+    #[cfg_attr(coverage, coverage(off))]
     #[cfg(not(feature = "dlopen"))]
     pub(crate) fn load() -> Result<Self, std::io::Error> {
         #[link(name = "X11", kind = "dylib")]
@@ -143,7 +143,7 @@ impl Xlib {
     }
 
     /// Load the Xlib library at runtime.
-    #[cfg_attr(coverage, no_coverage)]
+    #[cfg_attr(coverage, coverage(off))]
     #[cfg(feature = "dlopen")]
     pub(crate) fn load() -> Result<Self, libloading::Error> {
         let xlib_library = unsafe { load_library(XLIB_LIBDIR, &["libX11.so.6", "libX11.so"]) }?;
@@ -178,7 +178,7 @@ impl Xlib {
 }
 
 #[cfg(feature = "dlopen")]
-#[cfg_attr(coverage, no_coverage)]
+#[cfg_attr(coverage, coverage(off))]
 unsafe fn load_library(
     prefix: Option<&str>,
     names: &[&str],
